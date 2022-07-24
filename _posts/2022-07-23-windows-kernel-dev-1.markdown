@@ -31,7 +31,7 @@ Kernel üzerinde ilk olarak tanımamız gereken 2 fonksiyonumuz var.
 
 1. Fonksiyonumuz DriverEntry. Bu fonksiyon user-mode üzerinde yazdığımız Main fonksiyonu ile birebir. Kernel dosyasının EntryPoint'i yani giriş noktası. Kernel yüklendiği zaman önce bu fonksiyon çalışacak.
 
-```
+{% highlight cpp %}
 NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT DriverObject, _In_ PUNICODE_STRING RegistryPath)
 { 
     UNREFERENCED_PARAMETER(DriverObject);
@@ -41,16 +41,16 @@ NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT DriverObject, _In_ PUNICODE_STRING Regi
     DbgPrint(("Sample driver initialized successfully\n"));
     return STATUS_SUCCESS;
 }
-```
+{% endhighlight %}
 
 2. opsiyonel fakat bu yazıda tanımlamasını yapacağız örnek kullanımı şu şekilde:
 
-```
+{% highlight cpp %}
 void SampleUnload(_In_ PDRIVER_OBJECT DriverObject) {
     UNREFERENCED_PARAMETER(DriverObject);
     DbgPrint(("Sample driver Unload called\n"));
 }
-```
+{% endhighlight %}
 
 - Fonksiyon NTSTATUS ile tanımlanmış yani bittiğinde bu türden bir veri döndürecek o halde ilk açıklamamız gereken yerden başlayalım `NTSTATUS`, adı üstünde durum hakkında durum hakkında bilgi. [WDK GitHub](https://github.com/tpn/winsdk-10/blob/master/Include/10.0.14393.0/shared/ntstatus.h) hesabından ntstatus.h dosyasını inceleyecek olursanız onlarca durum kodunun tanımlanmış olduğunu göreceğiz işte bunlardan bazıları:
 ![Screenshot_1](https://user-images.githubusercontent.com/65495573/180623025-c404f8e5-8d08-4786-9ca5-9babc3053427.png)
@@ -58,7 +58,7 @@ void SampleUnload(_In_ PDRIVER_OBJECT DriverObject) {
 - Fonksiyona parametre olarak verdiğimiz `_In_` türünde olan veriler Source (Code) Annotation Language (SAL)'ın bir parçasıdır. statik analiz ve kodu inceleyen insanlar için kullanışlı meta veriler sunar.
 - DriverEntry fonksiyonuna iki argüman kabul edildiğini gördük ve bunlardan birincisi diğer fonksiyonda da gördüğümüz DriverObject. Bu çekirdek sürücümüz için önemli çünkü aslında onun bir görüntüsünü temsil ediyor. I/O yöneticisi bir driver'ın DriverEntry rutinini çağırdığında, driver'ın sürücü nesnesinin (yani DriverObject) adresini sağlar. DriverObject, bir kernel driver'ın standart rutinlerinin çoğunun EntryPoint yani giriş noktalarını depolamakla mükelleftir. Üstelik Unload'da yaptığımız gibi standart rutinlerin doldurulmasından da yazdığımız sürücü sorumlu tutuluyor. Aşağıdaki döküm MSDN sayfasından alıntı ve bu dökümde neleri tanımlayabileceğimizi açıkça görebiliyoruz.
 
-```
+{% highlight cpp %}
   typedef struct _DRIVER_OBJECT {
   CSHORT             Type;
   CSHORT             Size;
@@ -76,7 +76,7 @@ void SampleUnload(_In_ PDRIVER_OBJECT DriverObject) {
   PDRIVER_UNLOAD     DriverUnload;
   PDRIVER_DISPATCH   MajorFunction[IRP_MJ_MAXIMUM_FUNCTION + 1];
 } DRIVER_OBJECT, *PDRIVER_OBJECT;
-```
+{% endhighlight %}
 
 ![MSDN](https://docs.microsoft.com/en-us/windows-hardware/drivers/kernel/images/24drvobj.png)
 
